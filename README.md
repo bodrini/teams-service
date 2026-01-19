@@ -1,6 +1,6 @@
 # Teams Service (Node.js + TypeScript + MariaDB)
 
-This good microservice aggregates information about sports teams from different tables and exposes it via a REST API.
+This microservice aggregates information about sports teams from different tables and exposes it via a REST API.
 
 ## Installation
 
@@ -24,4 +24,6 @@ All requests are served under the /api/teams prefix.
 - PUT /teams/:id — Fully update a team by ID
 - PATCH /teams/:id — Partially update a team by ID
 - DELETE /teams?id={id} — Delete a team by ID (provided as a query parameter)
+
+
 
