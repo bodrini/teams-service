@@ -13,4 +13,12 @@ export class PatchTeamDto {
   @IsOptional()
   @IsNumber({},{ message: 'Sport ID must be an integer' })
   sport_id?: number;
+
+  @IsOptional()
+  @IsNumber({},{ message: 'external_team_id must be an integer' })
+  external_team_id!: number;
+  
+  @IsOptional()
+  @IsNumber({},{ message: 'external_league_id must be an integer' })
+  external_league_id!: number;
 }

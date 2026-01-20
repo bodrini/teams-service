@@ -1,9 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { CreateTeamDto, UpdateTeamDto, PatchTeamDto, 
-  CreateTeamResponseDto, UpdateTeamResponseDto, PatchTeamResponseDto  } from './dto';
-import { TeamsService } from './teams.service';
+   UpdateTeamResponseDto, PatchTeamResponseDto  } from './dto';
+  import { GetTeamStatsDto } from './dto/get-team-stats.dto';
+  import { TeamsService } from './teams.service';
 import { HttpError } from '../../common/errors/http-error';
 import { validateRequest } from '../../common/middleware/validation.middleware';
+
 
 const teamsService = new TeamsService();
 const router = Router();
@@ -16,6 +18,26 @@ router.get('/teams', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Ошибка сервера', detail: (error as Error).message });
   }
 });
+
+router.post(
+  '/teams/sync-stats',
+  validateRequest(GetTeamStatsDto), 
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const dto = req.body as GetTeamStatsDto;
+
+      const result = await teamsService.syncTeamStatistics(dto);
+
+      res.status(200).json({
+        message: 'Статистика успешно синхронизирована',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 /**
  * POST /teams
  * Создает новую команду
