@@ -65,6 +65,8 @@ async createTeam(team: CreateTeamDto) : Promise<CreateTeamResponseDto> {
     [team.name, team.country_id, team.sport_id, team.external_team_id, team.external_league_id]
   );
   
+  console.log('✅ [TEST] DB Result:', result);
+
   return { 
     id: result.insertId,
     name: team.name,
