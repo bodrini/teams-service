@@ -1,16 +1,16 @@
 # Teams Service
 
-A microservice for managing sports teams information. Built with **Node.js (Express)**, **TypeScript**, and **MariaDB**.
+A microservice for managing sports teams information. Built with **Node.js (Express)**, **TypeScript**, **Knex.js**, and **MariaDB**.
 
-Fully dockerized development environment with **Hot Reload** and **VS Code Debugging** support.
+Fully dockerized development environment with **Hot Reload**, **VS Code Debugging**, and automated **Migrations**.
 
 ## 🛠 Tech Stack
 * **Runtime:** Node.js (v18+)
 * **Framework:** Express.js
-* **Language:** TypeScript
+* **ORM/Query Builder:** Knex.js
 * **Database:** MariaDB
 * **Infrastructure:** Docker & Docker Compose
-* **Dev Tools:** Nodemon, ts-node
+* **Quality Control:** ESLint, Prettier, Husky, Lint-staged
 
 ---
 
@@ -18,21 +18,52 @@ Fully dockerized development environment with **Hot Reload** and **VS Code Debug
 
 ### Prerequisites
 * [Docker](https://www.docker.com/products/docker-desktop/) installed
+* Node.js (Local) - required for running migration scripts and git hooks
 * VS Code (recommended for debugging)
 
 ### Installation & Run
-1.  Clone the repository:
+1.  **Clone the repository and install dependencies:**
+    (Installing local dependencies is required for Git Hooks and Knex CLI to work)
     ```bash
     git clone <repository-url>
     cd teams-service
+    npm install
     ```
-2.  Start the application:
+
+2.  **Start the infrastructure:**
     ```bash
-    docker-compose up --build
+    docker-compose up --build -d
+    ```
+
+3.  **Run Database Migrations:**
+    The database starts empty. You need to apply the schema:
+    ```bash
+    npm run migrate
     ```
 
 The service will be available at **http://localhost:3000**.
-MariaDB will be automatically initialized with the schema from `init.sql`.
+
+---
+
+## 💾 Database Management (Knex)
+
+We use **Knex.js** for database versioning. Do not manually edit the SQL schema.
+
+| Action | Command | Description |
+| :--- | :--- | :--- |
+| **Apply Migrations** | `npm run migrate` | Updates database to the latest version |
+| **Create Migration** | `npm run migrate:make <name>` | Creates a new migration file in `/migrations` |
+| **Undo Last Change** | `npm run migrate:rollback` | Reverts the last batch of migrations |
+
+---
+
+## 👮‍♂️ Code Quality & Git Hooks
+
+This project uses **Husky** and **Lint-staged** to ensure code quality.
+
+* **Pre-commit Hook:** Before you commit, the system automatically runs **ESLint** and **Prettier**.
+* **Auto-fix:** It will try to fix formatting errors automatically.
+* **Blocking:** If there are critical errors, the commit will be blocked until you fix them.
 
 ---
 
@@ -71,9 +102,8 @@ Base URL: `http://localhost:3000/api`
 
 ## 📁 Project Structure
 * `src/` - Source code (TypeScript)
+* `migrations/` - Knex migration files (Database Schema)
 * `docker-compose.yml` - Docker services configuration
-* `init.sql` - Database initialization script
+* `knexfile.ts` - Database connection configuration
+* `.husky/` - Git hooks configuration
 * `.vscode/launch.json` - Debugger configuration
-
-
-
