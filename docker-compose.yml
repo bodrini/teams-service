@@ -1,9 +1,9 @@
-version: '3.9'
+version: "3.9"
 
 services:
   app:
     build: .
-    command: npm run start:dev 
+    command: npm run start:dev
     ports:
       - "3000:3000"
       - "9229:9229"
@@ -13,7 +13,6 @@ services:
       - .env
     volumes:
       - .:/app
-      
       - /app/node_modules
 
   db:
@@ -22,7 +21,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
