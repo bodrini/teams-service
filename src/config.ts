@@ -13,13 +13,14 @@ const getEnvVar = (name: string, required = true): string => {
 
 export const config = {
   port: process.env.PORT || 3000,
-  
+
   db: {
     host: getEnvVar('DB_HOST'),
   },
 
   externalApi: {
-    url: getEnvVar('EXTERNAL_API_URL'),
-    key: getEnvVar('EXTERNAL_API_KEY'), 
-  }
+    url: getEnvVar('EXTERNAL_FOOTBALL_API_URL'),
+    secondaryUrl: getEnvVar('EXTERNAL_BASKETBALL_API_URL'),
+    key: getEnvVar('EXTERNAL_API_KEY'),
+  },
 };

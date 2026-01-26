@@ -28,13 +28,32 @@ router.get('/teams', async (req: Request, res: Response) => {
 });
 
 router.post(
-  '/teams/sync-stats',
+  '/teams/sync-football-stats',
   validateRequest(GetTeamStatsDto),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const dto = req.body as GetTeamStatsDto;
 
-      const result = await teamsService.syncTeamStatistics(dto);
+      const result = await teamsService.syncFootballTeamStatistics(dto);
+
+      res.status(200).json({
+        message: 'Статистика успешно синхронизирована',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+router.post(
+  '/teams/sync-basketball-stats',
+  validateRequest(GetTeamStatsDto),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const dto = req.body as GetTeamStatsDto;
+
+      const result = await teamsService.syncBasketballTeamStatistics(dto);
 
       res.status(200).json({
         message: 'Статистика успешно синхронизирована',
