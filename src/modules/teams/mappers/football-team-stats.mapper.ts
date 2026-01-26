@@ -1,9 +1,8 @@
-import { ExternalTeamStatisticsDto } from '../dto/external-team-statistics.dto';
+import { ExternalFootballTeamStatisticsDto } from '../dto/external-football-team-statistics.dto';
 import { SaveTeamStatsDto } from '../dto/save-team-stats.dto';
 
 export class TeamStatsMapper {
-  static mapToDbDto(externalData: ExternalTeamStatisticsDto): SaveTeamStatsDto {
-    
+  static mapToDbDto(externalData: ExternalFootballTeamStatisticsDto): SaveTeamStatsDto {
     const { response } = externalData;
     const { team, league, fixtures } = response;
 

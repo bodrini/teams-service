@@ -10,7 +10,8 @@ import {
   PatchTeamResponseDto,
 } from './dto';
 import { SportsApiGateway } from './providers/sports-api.gateway';
-import { TeamStatsMapper } from './mappers/team-stats.mapper';
+import { TeamStatsMapper } from './mappers/football-team-stats.mapper';
+import { BasketballStatsMapper } from './mappers/basketball-team-stats.mapper';
 import { GetTeamStatsDto } from './dto/get-team-stats.dto';
 import { SaveTeamStatsDto } from './dto/save-team-stats.dto';
 
@@ -25,12 +26,19 @@ export class TeamsService {
     return this.teamsRepository.findAll();
   }
 
-  async syncTeamStatistics(params: GetTeamStatsDto): Promise<SaveTeamStatsDto> {
-    const externalData = await this.gateway.getTeamStatistics(params);
-
+  async syncFootballTeamStatistics(params: GetTeamStatsDto): Promise<SaveTeamStatsDto> {
+    const externalData = await this.gateway.getFootballStatistics(params);
     const statsDto = TeamStatsMapper.mapToDbDto(externalData);
-    await this.teamsStatRepository.saveTeamStatistics(statsDto);
 
+    await this.teamsStatRepository.saveTeamStatistics(statsDto);
+    return statsDto;
+  }
+
+  async syncBasketballTeamStatistics(params: GetTeamStatsDto): Promise<SaveTeamStatsDto> {
+    const externalData = await this.gateway.getBasketballStatistics(params);
+    const statsDto = BasketballStatsMapper.mapToDbDto(externalData);
+
+    await this.teamsStatRepository.saveTeamStatistics(statsDto);
     return statsDto;
   }
 
