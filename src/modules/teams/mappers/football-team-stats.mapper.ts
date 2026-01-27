@@ -4,7 +4,19 @@ import { SaveTeamStatsDto } from '../dto/save-team-stats.dto';
 export class TeamStatsMapper {
   static mapToDbDto(externalData: ExternalFootballTeamStatisticsDto): SaveTeamStatsDto {
     const { response } = externalData;
-    const { team, league, fixtures } = response;
+    const {
+      team,
+      league,
+      fixtures,
+    }: {
+      team: any;
+      league: any;
+      fixtures: {
+        wins?: { total?: number };
+        draws?: { total?: number };
+        loses?: { total?: number };
+      };
+    } = response;
 
     const dto = new SaveTeamStatsDto();
 
