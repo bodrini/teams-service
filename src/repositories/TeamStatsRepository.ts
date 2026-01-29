@@ -24,4 +24,12 @@ export class TeamStatsRepository {
       stats.loses_total,
     ]);
   }
+  async healthCheck(): Promise<boolean> {
+    try {
+      await db.raw('SELECT 1');
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
