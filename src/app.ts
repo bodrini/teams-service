@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import express from 'express';
 import teamsRouter from './modules/teams/teams.controller';
+import healthRouter from './modules/health/health.controller';
 import { errorHandler } from './common/middleware/error-handler';
 
 const app = express();
@@ -9,9 +10,8 @@ const app = express();
 app.use(express.json()); // <-- добавлено для поддержки методов POST/PATCH/PUT
 
 const PORT = 3000;
-
 app.use('/api', teamsRouter);
-
+app.use('/api', healthRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
