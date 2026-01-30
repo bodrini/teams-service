@@ -65,6 +65,14 @@ router.post(
   },
 );
 
+router.post('/teams/sync-all-stats', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await teamsService.syncAllTeamStatistics();
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
 /**
  * POST /teams
  * Создает новую команду

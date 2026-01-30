@@ -17,6 +17,7 @@ import { SaveTeamStatsDto } from './dto/save-team-stats.dto';
 
 export class TeamsService {
   private readonly gateway = new SportsApiGateway();
+
   constructor(
     private readonly teamsRepository: TeamRepository,
     private readonly teamsStatRepository: TeamStatsRepository,
@@ -57,6 +58,7 @@ export class TeamsService {
       external_league_id: team.external_league_id,
     };
   }
+
   /**
    * Полное обновление команды
    */
@@ -111,5 +113,43 @@ export class TeamsService {
       throw new HttpError(404, 'Команда не найдена');
     }
     return { message: 'Команда успешно удалена' };
+  }
+
+  /**
+   * Массовая синхронизация статистики для всех команд
+   */
+  async syncAllTeamStatistics() {
+    const findTeams = await this.teamsRepository.findAll();
+    const syncableTeams = findTeams.filter(
+      (team) => team.external_team_id && team.external_league_id && team.sport_id,
+    );
+
+    const results = await Promise.allSettled(
+      syncableTeams.map(async (team) => {
+        const params: GetTeamStatsDto = {
+          leagueId: team.external_league_id!.toString(),
+          teamId: team.external_team_id!.toString(),
+          season: '2023',
+        };
+
+        if (team.sport_id === 1) {
+          return this.syncFootballTeamStatistics(params);
+        } else if (team.sport_id === 2) {
+          return this.syncBasketballTeamStatistics(params);
+        } else {
+          throw new HttpError(400, `Unsupported sport_id: ${team.sport_id}`);
+        }
+      }),
+    );
+
+    const successCount = results.filter((r) => r.status === 'fulfilled').length;
+    const failCount = results.filter((r) => r.status === 'rejected').length;
+
+    return {
+      total: syncableTeams.length,
+      success: successCount,
+      failed: failCount,
+      message: `Синхронизация завершена. Успешно: ${successCount}, Ошибок: ${failCount}`,
+    };
   }
 }

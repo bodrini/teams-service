@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty, IsInt, Min } from 'class-validator';
-import { Type } from 'class-transformer'; // <--- Важный импорт
+import { Type } from 'class-transformer';
 
 export class GetTeamStatsDto {
   @IsString({ message: 'teamId должен быть строкой' })
@@ -13,5 +13,5 @@ export class GetTeamStatsDto {
   @Type(() => Number)
   @IsInt({ message: 'season должен быть числом' })
   @Min(2000)
-  season!: number;
+  season!: string;
 }
