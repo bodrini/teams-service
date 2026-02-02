@@ -11,6 +11,7 @@ export class TeamRepository {
         't.name',
         'c.country_name',
         's.sport_name',
+        's.id as sport_id',
         't.external_team_id',
         't.external_league_id',
       );

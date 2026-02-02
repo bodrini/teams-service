@@ -120,6 +120,14 @@ export class TeamsService {
    */
   async syncAllTeamStatistics() {
     const findTeams = await this.teamsRepository.findAll();
+    // 👇 ДОБАВЬ ЭТО
+    if (findTeams.length > 0) {
+      console.log('🔍 ПРОВЕРКА ПОЛЕЙ:', Object.keys(findTeams[0]));
+      console.log('📄 ДАННЫЕ:', findTeams[0]);
+    } else {
+      console.log('❌ findAll вернул пустой массив!');
+    }
+    // 👆
     const syncableTeams = findTeams.filter(
       (team) => team.external_team_id && team.external_league_id && team.sport_id,
     );
