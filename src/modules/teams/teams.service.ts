@@ -16,6 +16,7 @@ import { BasketballStatsMapper } from './mappers/basketball-team-stats.mapper';
 import { mapNhlResults } from './mappers/nhl-results-mapper';
 import { GetTeamStatsDto } from './dto/get-team-stats.dto';
 import { SaveTeamStatsDto } from './dto/save-team-stats.dto';
+import { CURRENT_SEASON } from '../../common/constants/season';
 
 export class TeamsService {
   constructor(
@@ -124,19 +125,13 @@ export class TeamsService {
 
     if (!statDto) {
       console.log(`[Service] Результат за ${TARGET_DATE} не найден.`);
+      return null;
     }
+    await this.teamsStatRepository.saveNhlStatistics(statDto);
     return statDto;
   }
   async syncAllTeamStatistics() {
     const findTeams = await this.teamsRepository.findAll();
-    // 👇 ДОБАВЬ ЭТО
-    if (findTeams.length > 0) {
-      console.log('🔍 ПРОВЕРКА ПОЛЕЙ:', Object.keys(findTeams[0]));
-      console.log('📄 ДАННЫЕ:', findTeams[0]);
-    } else {
-      console.log('❌ findAll вернул пустой массив!');
-    }
-    // 👆
     const syncableTeams = findTeams.filter(
       (team) => team.external_team_id && team.external_league_id && team.sport_id,
     );
@@ -146,7 +141,7 @@ export class TeamsService {
         const params: GetTeamStatsDto = {
           leagueId: team.external_league_id!.toString(),
           teamId: team.external_team_id!.toString(),
-          season: '2023',
+          season: CURRENT_SEASON,
         };
 
         if (team.sport_id === 1) {

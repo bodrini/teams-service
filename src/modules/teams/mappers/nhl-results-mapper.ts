@@ -36,5 +36,6 @@ export const mapNhlResults = (
     goals_Islanders: goalsIslanders,
     goals_Enemy: goalsEnemy,
     are_we_happy: goalsIslanders > goalsEnemy,
+    game_date: targetDate,
   };
 };

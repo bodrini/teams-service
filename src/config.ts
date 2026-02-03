@@ -21,6 +21,7 @@ export const config = {
   externalApi: {
     url: getEnvVar('EXTERNAL_FOOTBALL_API_URL'),
     secondaryUrl: getEnvVar('EXTERNAL_BASKETBALL_API_URL'),
+    nhlApiUrl: getEnvVar('EXTERNAL_HOCKEY_API_URL'),
     key: getEnvVar('EXTERNAL_API_KEY'),
   },
 };
