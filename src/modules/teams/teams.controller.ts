@@ -8,14 +8,24 @@ import {
 } from './dto';
 import { GetTeamStatsDto } from './dto/get-team-stats.dto';
 import { TeamsService } from './teams.service';
+import { NhlApiGateway } from './providers/nhl-api.gateway';
+import { SportsApiGateway } from './providers/sports-api.gateway';
 import { TeamStatsRepository } from '../../repositories/TeamStatsRepository';
 import { TeamRepository } from '../../repositories/TeamRepository';
 import { HttpError } from '../../common/errors/http-error';
 import { validateRequest } from '../../common/middleware/validation.middleware';
+import db from '../../common/db/database';
 
-const teamRepository = new TeamRepository();
-const teamStatsRepository = new TeamStatsRepository();
-const teamsService = new TeamsService(teamRepository, teamStatsRepository);
+const teamRepository = new TeamRepository(db);
+const teamStatsRepository = new TeamStatsRepository(db);
+const sportsApiGateway = new SportsApiGateway();
+const nhlApiGateway = new NhlApiGateway();
+const teamsService = new TeamsService(
+  teamRepository,
+  teamStatsRepository,
+  sportsApiGateway,
+  nhlApiGateway,
+);
 const router = Router();
 
 router.get('/teams', async (req: Request, res: Response) => {
@@ -139,6 +149,18 @@ router.patch(
     }
   },
 );
+
+router.get('/teams/nhl-stats-sync', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await teamsService.getNhlTeamResult();
+    res.status(200).json({
+      message: 'NHL статистика успешно получена',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * DELETE /teams?id=

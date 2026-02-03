@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { HealthService } from './health.service';
 import { TeamStatsRepository } from '../../repositories/TeamStatsRepository';
+import db from '../../common/db/database';
 
-const teamStatsRepository = new TeamStatsRepository();
+const teamStatsRepository = new TeamStatsRepository(db);
 const healthService = new HealthService(teamStatsRepository);
 const router = Router();
 

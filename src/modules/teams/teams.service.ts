@@ -10,18 +10,20 @@ import {
   PatchTeamResponseDto,
 } from './dto';
 import { SportsApiGateway } from './providers/sports-api.gateway';
+import { NhlApiGateway } from './providers/nhl-api.gateway';
 import { TeamStatsMapper } from './mappers/football-team-stats.mapper';
 import { BasketballStatsMapper } from './mappers/basketball-team-stats.mapper';
+import { mapNhlResults } from './mappers/nhl-results-mapper';
 import { GetTeamStatsDto } from './dto/get-team-stats.dto';
 import { SaveTeamStatsDto } from './dto/save-team-stats.dto';
 import { CURRENT_SEASON } from '../../common/constants/season';
 
 export class TeamsService {
-  private readonly gateway = new SportsApiGateway();
-
   constructor(
     private readonly teamsRepository: TeamRepository,
     private readonly teamsStatRepository: TeamStatsRepository,
+    private readonly footballGateway: SportsApiGateway,
+    private readonly NhlGateway: NhlApiGateway,
   ) {}
 
   async getAggregatedTeams() {
@@ -29,7 +31,7 @@ export class TeamsService {
   }
 
   async syncFootballTeamStatistics(params: GetTeamStatsDto): Promise<SaveTeamStatsDto> {
-    const externalData = await this.gateway.getFootballStatistics(params);
+    const externalData = await this.footballGateway.getFootballStatistics(params);
     const statsDto = TeamStatsMapper.mapToDbDto(externalData);
 
     await this.teamsStatRepository.saveTeamStatistics(statsDto);
@@ -37,7 +39,7 @@ export class TeamsService {
   }
 
   async syncBasketballTeamStatistics(params: GetTeamStatsDto): Promise<SaveTeamStatsDto> {
-    const externalData = await this.gateway.getBasketballStatistics(params);
+    const externalData = await this.footballGateway.getBasketballStatistics(params);
     const statsDto = BasketballStatsMapper.mapToDbDto(externalData);
 
     await this.teamsStatRepository.saveTeamStatistics(statsDto);
@@ -116,9 +118,18 @@ export class TeamsService {
     return { message: 'Команда успешно удалена' };
   }
 
-  /**
-   * Массовая синхронизация статистики для всех команд
-   */
+  async getNhlTeamResult() {
+    const TARGET_DATE = '2026-01-06';
+    const externalData = await this.NhlGateway.getNhlResultsForDate();
+    const statDto = mapNhlResults(externalData, TARGET_DATE);
+
+    if (!statDto) {
+      console.log(`[Service] Результат за ${TARGET_DATE} не найден.`);
+      return null;
+    }
+    await this.teamsStatRepository.saveNhlStatistics(statDto);
+    return statDto;
+  }
   async syncAllTeamStatistics() {
     const findTeams = await this.teamsRepository.findAll();
     const syncableTeams = findTeams.filter(
