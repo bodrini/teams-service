@@ -1,8 +1,25 @@
 import { Knex } from 'knex';
 import { SaveTeamStatsDto } from '../modules/teams/dto';
+import { NhlResultsDto } from '../modules/teams/dto/nhl-results.dto';
 
 export class TeamStatsRepository {
   constructor(private readonly db: Knex) {}
+
+  async saveNhlStatistics(stats: NhlResultsDto): Promise<void> {
+    const sql = `
+      INSERT INTO nhl_stats
+        (goals_Islanders, goals_Enemy, are_we_happy, game_date)
+      VALUES 
+        (?, ?, ?, ?)`;
+
+    await this.db.raw(sql, [
+      stats.goals_Islanders,
+      stats.goals_Enemy,
+      stats.are_we_happy,
+      stats.game_date,
+    ]);
+  }
+
   async saveTeamStatistics(stats: SaveTeamStatsDto): Promise<void> {
     const sql = `
       INSERT INTO team_statistics 

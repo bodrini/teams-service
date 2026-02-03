@@ -13,5 +13,5 @@ export class GetTeamStatsDto {
   @Type(() => Number)
   @IsInt({ message: 'season должен быть числом' })
   @Min(2000)
-  season!: string;
+  season!: number;
 }
