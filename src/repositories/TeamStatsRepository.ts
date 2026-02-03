@@ -1,7 +1,8 @@
-import db from '../common/db/database';
+import { Knex } from 'knex';
 import { SaveTeamStatsDto } from '../modules/teams/dto';
 
 export class TeamStatsRepository {
+  constructor(private readonly db: Knex) {}
   async saveTeamStatistics(stats: SaveTeamStatsDto): Promise<void> {
     const sql = `
       INSERT INTO team_statistics 
@@ -15,7 +16,7 @@ export class TeamStatsRepository {
         created_at = CURRENT_TIMESTAMP
     `;
 
-    await db.raw(sql, [
+    await this.db.raw(sql, [
       stats.external_team_id,
       stats.external_league_id,
       stats.season,
@@ -26,7 +27,7 @@ export class TeamStatsRepository {
   }
   async healthCheck(): Promise<boolean> {
     try {
-      await db.raw('SELECT 1');
+      await this.db.raw('SELECT 1');
       return true;
     } catch {
       return false;
