@@ -1,6 +1,6 @@
 # Teams Service
 
-A microservice for managing sports teams information. Built with **Node.js (Express)**, **TypeScript**, **Knex.js**, and **MariaDB**.
+A microservice for managing sports teams information and synchronizing statistics (Football, Basketball, NHL). Built with **Node.js (Express)**, **TypeScript**, **Knex.js**, and **MariaDB**.
 
 Fully dockerized development environment with **Hot Reload**, **VS Code Debugging**, and automated **Migrations**.
 
@@ -10,6 +10,7 @@ Fully dockerized development environment with **Hot Reload**, **VS Code Debuggin
 * **ORM/Query Builder:** Knex.js
 * **Database:** MariaDB
 * **Infrastructure:** Docker & Docker Compose
+* **Architecture:** Dependency Injection, Repository Pattern
 * **Quality Control:** ESLint, Prettier, Husky, Lint-staged
 
 ---
@@ -34,11 +35,12 @@ Fully dockerized development environment with **Hot Reload**, **VS Code Debuggin
     ```bash
     docker-compose up --build -d
     ```
+    *Note: App runs on port 3000. Database is exposed on host port **3307**.*
 
 3.  **Run Database Migrations:**
-    The database starts empty. You need to apply the schema:
+    The database starts empty. Since you are running this from your host machine, use the external port:
     ```bash
-    npm run migrate
+    DB_HOST=127.0.0.1 DB_PORT=3307 npm run migrate
     ```
 
 The service will be available at **http://localhost:3000**.
@@ -51,7 +53,7 @@ We use **Knex.js** for database versioning. Do not manually edit the SQL schema.
 
 | Action | Command | Description |
 | :--- | :--- | :--- |
-| **Apply Migrations** | `npm run migrate` | Updates database to the latest version |
+| **Apply Migrations** | `npm run migrate` | Updates database to the latest version (requires env vars if running locally) |
 | **Create Migration** | `npm run migrate:make <name>` | Creates a new migration file in `/migrations` |
 | **Undo Last Change** | `npm run migrate:rollback` | Reverts the last batch of migrations |
 
@@ -91,9 +93,12 @@ Base URL: `http://localhost:3000/api`
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
+| **POST** | **`/teams/sync-football-stats`** | **Fetch & Save Football Stats** |
+| **POST** | **`/teams/sync-basketball-stats`** | **Fetch & Save Basketball Stats** |
+| **POST** | **`/teams/sync-all-stats`** | **Run sync for all sports** |
+| **GET** | **`/teams/nhl-stats-sync`** | **Check & Save NHL results (Islanders)** |
 | `GET` | `/teams` | Retrieve list of all teams |
 | `POST` | `/teams` | Create a new team manually |
-| **`POST`** | **`/teams/sync-stats`** | **Fetch external stats & save to DB (Upsert)** |
 | `PUT` | `/teams/:id` | Fully update a team by ID |
 | `PATCH`| `/teams/:id` | Partially update a team by ID |
 | `DELETE`| `/teams?id={id}`| Delete a team by ID (query param) |
@@ -101,9 +106,10 @@ Base URL: `http://localhost:3000/api`
 ---
 
 ## 📁 Project Structure
-* `src/` - Source code (TypeScript)
+* `src/modules/` - Domain logic (Controllers, Services)
+* `src/gateways/` - External API integration (NHL, SportsAPI)
+* `src/repositories/` - Data access layer (Knex)
 * `migrations/` - Knex migration files (Database Schema)
 * `docker-compose.yml` - Docker services configuration
 * `knexfile.ts` - Database connection configuration
 * `.husky/` - Git hooks configuration
-* `.vscode/launch.json` - Debugger configuration
