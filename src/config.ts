@@ -12,6 +12,7 @@ const getEnvVar = (name: string, required = true): string => {
 };
 
 export const config = {
+  env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 3000,
 
   db: {
