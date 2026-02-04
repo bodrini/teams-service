@@ -1,10 +1,13 @@
 import 'reflect-metadata';
 import express from 'express';
+import cors from 'cors';
 import teamsRouter from './modules/teams/teams.controller';
 import healthRouter from './modules/health/health.controller';
 import { errorHandler } from './common/middleware/error-handler';
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
