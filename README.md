@@ -47,6 +47,20 @@ The service will be available at **http://localhost:3000**.
 
 ---
 
+## 📝 Observability & Logging
+
+This project replaces standard `console.log` with **Pino** for high-performance structured logging.
+
+| Environment | Format | Description |
+| :--- | :--- | :--- |
+| **Development** | **Pretty Print** | Colorful, human-readable logs via `pino-pretty`. Easy to read in the terminal. |
+| **Production** | **JSON** | Structured JSON output suitable for log aggregators (ELK, Datadog, Splunk). |
+
+**Features:**
+* **Request Tracking:** Automatically logs every incoming HTTP request (Method, URL, Status Code, Response Time) using `pino-http`.
+* **Environment Aware:** Configuration relies on `NODE_ENV` to switch formats automatically.
+* **Fail-Fast Config:** The application validates critical environment variables on startup.
+
 ## 💾 Database Management (Knex)
 
 We use **Knex.js** for database versioning. Do not manually edit the SQL schema.
