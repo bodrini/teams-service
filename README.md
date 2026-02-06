@@ -109,7 +109,7 @@ Base URL: `http://localhost:3000/api`
 | :--- | :--- | :--- |
 | **POST** | **`/teams/sync-football-stats`** | **Fetch & Save Football Stats** |
 | **POST** | **`/teams/sync-basketball-stats`** | **Fetch & Save Basketball Stats** |
-| **POST** | **`/teams/sync-all-stats`** | **Run sync for all sports** |
+| **POST** | **`/teams/sync-all-stats`** | **Run sync for Football and Basketball teams** |
 | **GET** | **`/teams/nhl-stats-sync`** | **Check & Save NHL results (Islanders)** |
 | `GET` | `/teams` | Retrieve list of all teams |
 | `POST` | `/teams` | Create a new team manually |
