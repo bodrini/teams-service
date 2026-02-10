@@ -4,3 +4,8 @@ export class NhlResultsDto {
   are_we_happy!: boolean;
   game_date!: string;
 }
+
+export type NhlMappingResult =
+  | { status: 'SUCCESS'; data: NhlResultsDto }
+  | { status: 'RETRY'; newTargetDate: string }
+  | { status: 'NOT_FOUND' };
