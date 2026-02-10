@@ -15,8 +15,7 @@ export class NhlApiGateway {
       },
     });
   }
-  async getNhlResultsForDate(): Promise<ExternalNhlResultsDto> {
-    const date = '2026-01-06';
+  async getNhlResultsForWeek(date: string): Promise<ExternalNhlResultsDto> {
     const url = `schedule/${date}`;
     try {
       const { data } = await this.client.get<ExternalNhlResultsDto>(url);

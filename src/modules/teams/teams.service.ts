@@ -17,6 +17,7 @@ import { mapNhlResults } from './mappers/nhl-results-mapper';
 import { GetTeamStatsDto } from './dto/get-team-stats.dto';
 import { SaveTeamStatsDto } from './dto/save-team-stats.dto';
 import { CURRENT_SEASON } from '../../common/constants/season';
+import { logger } from '../../logger';
 
 export class TeamsService {
   constructor(
@@ -119,17 +120,52 @@ export class TeamsService {
   }
 
   async getNhlTeamResult() {
-    const TARGET_DATE = '2026-01-06';
-    const externalData = await this.NhlGateway.getNhlResultsForDate();
-    const statDto = mapNhlResults(externalData, TARGET_DATE);
+    let currentDate = new Date().toISOString().split('T')[0];
 
-    if (!statDto) {
-      console.log(`[Service] Результат за ${TARGET_DATE} не найден.`);
-      return null;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 5;
+
+    while (attempts < MAX_ATTEMPTS) {
+      try {
+        const externalData = await this.NhlGateway.getNhlResultsForWeek(currentDate);
+        const result = mapNhlResults(externalData);
+
+        if (result.status === 'SUCCESS') {
+          const { data } = result;
+          await this.teamsStatRepository.saveNhlStatistics(data);
+          return data;
+        }
+
+        if (result.status === 'RETRY') {
+          logger.warn(
+            {
+              failedDate: currentDate,
+              nextDate: result.newTargetDate,
+              attempt: attempts + 1,
+            },
+            '🔄 No games found here. Retrying with previous schedule...',
+          );
+
+          currentDate = result.newTargetDate;
+          attempts++;
+
+          continue;
+        }
+
+        if (result.status === 'NOT_FOUND') {
+          logger.info('❌ No NHL games found and no history available.');
+          return null;
+        }
+      } catch (error) {
+        logger.error(error, '🔥 Error during NHL sync iteration');
+        throw error;
+      }
     }
-    await this.teamsStatRepository.saveNhlStatistics(statDto);
-    return statDto;
+
+    logger.error('⛔ Max retry attempts reached. Could not sync NHL stats.');
+    return null;
   }
+
   async syncAllTeamStatistics() {
     const findTeams = await this.teamsRepository.findAll();
     const syncableTeams = findTeams.filter(

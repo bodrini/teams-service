@@ -1,30 +1,38 @@
 import { ExternalNhlResultsDto } from '../dto/external-nhl-results.dto';
-import { NhlResultsDto } from '../dto/nhl-results.dto';
+import { NhlMappingResult } from '../dto/nhl-results.dto';
+import { TARGET_TEAM_NHL } from '../../../common/constants/nhl-target-team';
 
-const TARGET_TEAM = 'Islanders';
+export const mapNhlResults = (externalData: ExternalNhlResultsDto): NhlMappingResult => {
+  const finishedGames = externalData.gameWeek.flatMap((day) => {
+    const games = day.games.filter(
+      (g) =>
+        g.homeTeam.commonName.default === TARGET_TEAM_NHL ||
+        g.awayTeam.commonName.default === TARGET_TEAM_NHL,
+    );
 
-export const mapNhlResults = (
-  externalData: ExternalNhlResultsDto,
-  targetDate: string,
-): NhlResultsDto | null => {
-  const dayStats = externalData.gameWeek.find((day) => day.date === targetDate);
-  if (!dayStats) return null;
+    return games
+      .filter((g) => g.gameState === 'OFF' || g.gameState === 'FINAL')
+      .map((g) => ({ ...g, gameDate: day.date }));
+  });
 
-  const targetGame = dayStats.games.find(
-    (game) =>
-      game.homeTeam.commonName.default === TARGET_TEAM ||
-      game.awayTeam.commonName.default === TARGET_TEAM,
-  );
+  if (finishedGames.length === 0) {
+    if (!externalData.previousStartDate) {
+      return { status: 'NOT_FOUND' };
+    }
 
-  if (!targetGame) return null;
-  if (targetGame.gameState !== 'OFF' && targetGame.gameState !== 'FINAL') {
-    return null;
+    return {
+      status: 'RETRY',
+      newTargetDate: externalData.previousStartDate,
+    };
   }
+
+  finishedGames.sort((a, b) => new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime());
+  const targetGame = finishedGames[0];
 
   let goalsIslanders = 0;
   let goalsEnemy = 0;
 
-  if (targetGame.homeTeam.commonName.default === TARGET_TEAM) {
+  if (targetGame.homeTeam.commonName.default === TARGET_TEAM_NHL) {
     goalsIslanders = targetGame.homeTeam.score ?? 0;
     goalsEnemy = targetGame.awayTeam.score ?? 0;
   } else {
@@ -33,9 +41,12 @@ export const mapNhlResults = (
   }
 
   return {
-    goals_Islanders: goalsIslanders,
-    goals_Enemy: goalsEnemy,
-    are_we_happy: goalsIslanders > goalsEnemy,
-    game_date: targetDate,
+    status: 'SUCCESS',
+    data: {
+      goals_Islanders: goalsIslanders,
+      goals_Enemy: goalsEnemy,
+      are_we_happy: goalsIslanders > goalsEnemy,
+      game_date: targetGame.gameDate,
+    },
   };
 };
