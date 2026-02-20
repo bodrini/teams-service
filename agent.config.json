@@ -1,0 +1,35 @@
+{
+  "projectType": "Node.js Express Backend",
+  "role": "Senior Backend Engineer (Node.js/TypeScript)",
+  "linterCommand": "npm run lint",
+  "contextFiles": [
+    "src/modules",
+    "src/repositories",
+    "src/common",
+    "src/db",
+    "migrations",
+    "src/app.ts",
+    "src/config.ts",
+    "knexfile.ts",
+    "package.json"
+  ],
+  "techStack": [
+    "Node.js v18+",
+    "Express.js",
+    "TypeScript",
+    "Knex.js (Query Builder)",
+    "MariaDB",
+    "Pino (Logging)",
+    "Docker"
+  ],
+  "rules": [
+    "Соблюдай Repository Pattern: вся работа с БД только в src/repositories.",
+    "Бизнес-логику инкапсулируй в src/modules/teams/teams.service.ts.",
+    "Для обработки HTTP-ответов используй контроллеры в src/modules/teams/teams.controller.ts.",
+    "Все новые таблицы или изменения схемы БД делай ТОЛЬКО через миграции в /migrations.",
+    "Используй Pino для логирования (не используй console.log).",
+    "Ошибки обрабатывай через http-error.ts и централизованный middleware.",
+    "При создании новых DTO следуй структуре в src/modules/teams/dto.",
+    "Соблюдай Dependency Injection при инициализации сервисов и репозиториев."
+  ]
+}
