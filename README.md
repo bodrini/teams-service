@@ -114,7 +114,6 @@ Base URL: `http://localhost:3000/api`
 | `GET` | `/teams` | Retrieve list of all teams |
 | `POST` | `/teams` | Create a new team manually |
 | `PUT` | `/teams/:id` | Fully update a team by ID |
-| `PATCH`| `/teams/:id` | Partially update a team by ID |
 | `DELETE`| `/teams?id={id}`| Delete a team by ID (query param) |
 
 ---
