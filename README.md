@@ -113,7 +113,6 @@ Base URL: `http://localhost:3000/api`
 | **GET** | **`/teams/nhl-stats-sync`** | **Check & Save NHL results (Islanders)** |
 | `GET` | `/teams` | Retrieve list of all teams |
 | `POST` | `/teams` | Create a new team manually |
-| `PUT` | `/teams/:id` | Fully update a team by ID |
 | `DELETE`| `/teams?id={id}`| Delete a team by ID (query param) |
 
 ---
